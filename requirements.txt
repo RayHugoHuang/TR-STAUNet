@@ -1,0 +1,26 @@
+# Data Manipulation & Math
+scipy
+numpy
+pandas
+
+# File I/O (HDF5 & NetCDF & DBF & YAML)
+h5py
+pyyaml
+xarray
+netCDF4
+dbfread
+
+# Geospatial & Mapping
+rasterio
+cartopy
+shapely
+
+# Visualization
+matplotlib
+opencv-python
+
+# Utilities
+tqdm
+
+# benchmark
+catboost

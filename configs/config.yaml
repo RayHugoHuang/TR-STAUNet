@@ -1,0 +1,126 @@
+experiment:
+  start_date: "2025-01-01"
+  end_date: "2025-01-31"
+  lookback_window: 3
+  predict_step: 1
+  rolling_days: 1
+  interpolation_method: "bilinear"
+  geo_area: [[120.0, 122.0], [21.5, 25.5]]
+  spatial_resolution: 0.005
+  seed: 42
+  train_val_split: 0.9
+  early_stopping_tolerance: 15
+  late_fusion: false
+  missing_value: 0.0
+  
+  # Evaluation / Inference parameters
+  train_end_date: "2025-01-24"
+  test_start_date: "2025-01-25"
+  target_time: "2025-01-31 04:00"
+  inference_limit_date: "2025-01-31 00:00"
+
+hyperparameters:
+  learning_rate: 2.0e-4
+  fine_tune_learning_rate: 2.0e-5
+  batch_size: 4
+  epochs: 90
+  output_channels: 6
+
+paths:
+  raw_data:
+    gems_dir: "F:/ray/"
+    gems_2025_dir: "D:/ray/"
+    era5_dir: "./dataset_storage/raw/ERA5/"
+  processed_files:
+    gems: "250101_GEMS_sparse_250131.h5"
+    era5: "250101_ERA5_sparse_250131.h5"
+    gt: "sparse_targets_2025_2025.h5"
+    static: "static_features.h5"
+    std: "25_MeanStd_25.h5"
+  weights:
+    attentionunet: "AttentionUnet.pth"
+
+features:
+  targets: ["PM2.5", "PM10", "O3", "NO2", "CO", "SO2"]
+  exclude: ["VISAI", "Ref440nm", "TSP", "pm10", "pm2.5", "SOX", "NOX", "THC", "NMHC", "co",
+    "agriculture", "forest", "transportation", "water-conservancy", "building", "public-facilities",
+    "Recreation", "salt-mining", "others", "popu-density"]
+  gems_abbre: 
+    - "AOD"
+    - "SSA"
+    - "ALH"
+    - "UVAI"
+    - "VISAI"
+    - "ColuO3"
+    - "Cloud-frac"
+    - "Solarzenith"
+    - "Viewzenith"
+    - "ColuNO2(trop)"
+    - "Ref440nm"
+  era5_abbre: ["d2m", "t2m", "ssrd", "u10", "v10", "sp", "tp"]
+  static_abbre:
+    # Emission inventory
+    - "TSP"
+    - "pm10"
+    - "pm2.5"
+    - "SOX"
+    - "NOX"
+    - "THC"
+    - "NMHC"
+    - "co"
+    # Land use and population density
+    - "agriculture"
+    - "forest"
+    - "transportation"
+    - "water-conservancy"
+    - "building"
+    - "public-facilities"
+    - "Recreation"
+    - "salt-mining"
+    - "others"
+    - "popu-density"
+    # DSM
+    - "elevation"
+    - "slope"
+  time_embed: ["h_s", "h_c", "d_s", "d_c"]
+  position_embed: ["lon", "lat"]
+  abbre_trans: {"AOD": "FinalAerosolOpticalDepth", "SSA": "FinalAerosolSingleScattAlb", 
+    "ALH": "FinalAerosolLayerHeight", "UVAI": "UVAerosolIndex", "VISAI": "VISAerosolIndex", 
+    "ColuO3": "ColumnAmountO3", "Cloud-frac": "EffectiveCloudFraction", "Solarzenith": "SolarZenithAngle", 
+    "Viewzenith": "ViewingZenithAngle", "ColuNO2(trop)": "ColumnAmountNO2Trop", "Ref440nm": "Reflectivity440"}
+  gems_feature:
+    "AERAOD": 
+      - "FinalAerosolOpticalDepth"
+      - "FinalAerosolSingleScattAlb"
+      - "FinalAerosolLayerHeight"
+      - "UVAerosolIndex"
+      - "VISAerosolIndex"
+    "O3T": 
+      - "ColumnAmountO3"
+      - "EffectiveCloudFraction"
+      - "SolarZenithAngle"
+      - "ViewingZenithAngle"
+    "NO2": ["ColumnAmountNO2Trop", "Reflectivity440"]
+  era5_feature: 
+    - "2m_dewpoint_temperature"
+    - "2m_temperature"
+    - "surface_solar_radiation_downwards"
+    - "10m_u_component_of_wind"
+    - "10m_v_component_of_wind"
+    - "surface_pressure"
+    - "total_precipitation"
+  
+  # Quality Flags for GEMS data
+  gems_quality_flags:
+    "AERAOD": "0b1111111001000011"
+    "O3T": "0b000010000011"
+    "NO2": "0b011"
+
+domains:
+  pollutants:
+    "PM2.5 (μg/m³)": [0, 50]
+    "PM10 (μg/m³)": [0, 100]
+    "O3 (ppb)": [0, 90]
+    "NO2 (ppb)": [0, 20]
+    "CO (ppm)": [0, 1]
+    "SO2 (ppb)": [0, 5]
